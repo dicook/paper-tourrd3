@@ -12,46 +12,39 @@ display as a movie but has no capacity for interaction, such as stop/go,
 change tour type, drop/add variables. The tourrGui package provides
 these sorts of controls, but the interface is programmed with the dated
 RGtk2 package. This work explores using custom messages to pass data
-from R to D3 for viewing, using the shiny framework.
+from R to D3 for viewing, using the Shiny framework.
 }
 
 \subsection{Introduction}\label{introduction}
 
-The tour algorithm (Cook et al. \protect\hyperlink{ref-gt_pp}{1995};
-Cook et al. \protect\hyperlink{ref-gt_pp_mc}{2007}) is a way of
+The tour algorithm (Cook et al. 1995; Cook et al. 2007) is a way of
 systematically generating and displaying projections of high-dimensional
 spaces in order for the viewer to examine the multivariate distribution
 of data. It can do this either randomly, or by picking projections
 judged interesting according to some criterion or index function. The
-tourr package (Wickham et al. \protect\hyperlink{ref-tourr}{2011})
-provides the computing and display in R (R Core Team
-\protect\hyperlink{ref-R}{2018}; Ihaka and Gentleman
-\protect\hyperlink{ref-ihaka:1996}{1996}) to make several types of
-tours, grand, guided, little and local. The projection dimension can be
-chosen between one and the number of variables in the data. The display,
-though, has no capacity for interaction. The viewer can watch the tour
-like a movie, but not pause it and restart, or change tour type, or
-number of variables.
+tourr package (Wickham et al. 2011) provides the computing and display
+in R (R Core Team 2018; Ihaka and Gentleman 1996) to make several types
+of tours, grand, guided, little and local. The projection dimension can
+be chosen between one and the number of variables in the data. The
+display, though, has no capacity for interaction. The viewer can watch
+the tour like a movie, but not pause it and restart, or change tour
+type, or number of variables.
 
 These interactive controls were provided with the tourrGui package
-(Huang, Cook, and Wickham \protect\hyperlink{ref-tourrGui}{2012}), with
-was programmed with the RGtk2 package (Lawrence and Temple Lang
-\protect\hyperlink{ref-RGtk2}{2010}). This is not the toolkit of choice
-today, and has been superceded with primarily web-capable tools, like
-shiny (Chang et al. \protect\hyperlink{ref-shiny}{2017}). To display
-dynamic graphics though, is not straight-forward. This paper explains
-how to use D3 (Bostock, Ogievetsky, and Heer
-\protect\hyperlink{ref-D3}{2011}) as the display engine, in a shiny GUI,
-using custom message passing between server and client.
+(Huang, Cook, and Wickham 2012), with was programmed with the RGtk2
+package (Lawrence and {Temple Lang} 2010). This is not the toolkit of
+choice today, and has been superceded with primarily web-capable tools,
+like Shiny (Chang et al. 2017). To display dynamic graphics though, is
+not straight-forward. This paper explains how to use D3 (Bostock,
+Ogievetsky, and Heer 2011) as the display engine, in a Shiny GUI, using
+custom message passing between server and client.
 
 \subsection{Creating a tour, with the tourr
 package}\label{creating-a-tour-with-the-tourr-package}
 
-The \pkg{tourr} package (Wickham et al.
-\protect\hyperlink{ref-tourr}{2011}) is an R implementation of the tour
-algorithms discussed in Cook et al.
-(\protect\hyperlink{ref-gt_pp_mc}{2007}). It includes methods for
-geodesic interpolation and basis generation, as well as an
+The \pkg{tourr} package (Wickham et al. 2011) is an R implementation of
+the tour algorithms discussed in Cook et al. (2007). It includes methods
+for geodesic interpolation and basis generation, as well as an
 implementation of the simulated annealing algorithm to optimise
 projection pursuit indices for the guided tour. The tour can be
 displayed directly in the R graphics device, for example:
@@ -91,9 +84,8 @@ per second, reflecting the rendering speed of the device in use. The
 projection space. For our purposes, \(\Delta\), \texttt{fps} in the
 code, is set at 25, while the \(\omega\) can be adjusted by the user.
 
-\subsection{\texorpdfstring{Connecting the tour projections to D3
-display using
-\texttt{sendCustomMessage}}{Connecting the tour projections to D3 display using sendCustomMessage}}\label{connecting-the-tour-projections-to-d3-display-using-sendcustommessage}
+\subsection{Connecting the tour projections to D3 display using
+\texttt{sendCustomMessage}}\label{connecting-the-tour-projections-to-d3-display-using-sendcustommessage}
 
 D3.js (Data-Driven Documents) (REF) is a JavaScript library for
 manipulating documents based on data. The advantages of D3 are similar
@@ -103,22 +95,23 @@ wide variety of devices, with a large user base. D3 works on data
 objects in the JavaScript Object Notation (JSON) format, which are then
 parsed and used to display customisable data visualisations.
 
-The new implementation of the tour uses D3 to render each projection
-step returned by R, focusing on 2D projections as a test case. It does
-this by drawing and re-drawing a scatterplot with dots (or circles in D3
-language) and providing SVG objects for the web browser to render.
+The new implementation of the tour interface uses D3 to render each
+projection step returned by R, focusing on 2D projections as a test
+case. It does this by drawing and re-drawing a scatterplot with dots (or
+circles in D3 language) and providing SVG objects for the web browser to
+render.
 
-There two functions provided by the Shiny framework to transport data
-be- tween R and javascript: \texttt{session\$sendCustomMessage()} in R,
-and the corresponding \texttt{Shiny.addCustomMessageHandler()} in
-Javascript. Whenever the former is executed in R, the latter function
+There are two functions provided by the Shiny framework to transport
+data between R and JavaScript: \texttt{session\$sendCustomMessage()} in
+R, and the corresponding \texttt{Shiny.addCustomMessageHandler()} in
+JavaScript. Whenever the former is executed in R, the latter function
 will execute a code block in JS. There are many examples of such
 functions being used to pass arbitrary data from an R app to a JS
 front-end, few examples exist of this basic functionality to update a D3
 animation in real-time.
 
 The data format expected by D3 is in JSON format, which combines two
-basic program- ming paradigms: a collection of name/value pairs, and an
+basic programming paradigms: a collection of name/value pairs, and an
 ordered list of values. R's preferred data formats include data frames,
 vectors and matrices. Every time a new projection has been calculated
 with the tour path, the resulting matrix needs to be converted to JSON
@@ -129,15 +122,15 @@ session$sendCustomMessage(type = "data", message = toJSON(j))
 \end{verbatim}
 
 This code is from the observe environment from the \texttt{server.R}
-file. It converts the projection matrix to JSON format, and sends it to
-JavaScript with the id data. When parsed in D3 by its \texttt{data()}
-method, it is converted back into a logical 2D array where the columns
-are queried first, then the rows. If column names are included in the
-JSON, the column indices are strings; otherwise they are integers
-starting from 1. All of the code required to render the scatterplots and
-legends, along with colours, is JavaScript code in the file
-\texttt{d3anim.js}. In particular, the data from R is handled with the
-following code:
+file. It converts the matrix of projected data points to JSON format,
+and sends it to JavaScript with the id data. When parsed in D3 by its
+\texttt{data()} method, it is converted back into a logical 2D array
+where the columns are queried first, then the rows. If column names are
+included in the JSON, the column indices are strings; otherwise they are
+integers starting from 1. All of the code required to render the
+scatterplots and legends, along with colours, is JavaScript code in the
+file \texttt{d3anim.js}. In particular, the data from R is handled with
+the following code:
 
 \begin{verbatim}
 Shiny.addCustomMessageHandler("data",
@@ -205,14 +198,17 @@ observe({
 
 The D3 canvas makes for smooth drawing and re-drawing of the data
 projections. Adding a graphical user interface (GUI) around the display
-is straightforward with the shiny package, e.g.~control elements such as
+is straightforward with the Shiny package, e.g.~control elements such as
 stop/go, increase/decrease speed, change tour type, add/remove variables
 from the mix.
 
 The main disadvantage is that the speed is inconsistent, as server and
 client play tag to keep up with each other, and the display cannot
 handle many observations. Noticeable slow down was oberved with 2000
-points.
+points, the main reason being the rendering time required for the large
+number of SVG circle elements. The situation can be improved when using
+a single HTML5 canvas element to draw the scatter points, significantly
+reducing the rendering time.
 
 \subsection{Code}\label{code}
 
@@ -223,57 +219,49 @@ TourrGuiD3{]}, and the source material for this paper is available at
 \subsection{Summary}\label{summary}
 
 The \texttt{sendCustomMessage} function provides a way to share a tour
-path with the D3 renderer, and embed it in a shiny GUI providing
-controls such as top/go, increase/decrease speed, change tour type,
+path with the D3 renderer, and embed it in a Shiny GUI providing
+controls such as stop/go, increase/decrease speed, change tour type,
 add/remove variables. However, the approach can result in inconsistent
 speed which appears as jerkiness in the motion, and it isn't suitable
 for large numbers of observations.
 
 \subsection{References}\label{references}
 
-\hypertarget{refs}{}
-\hypertarget{ref-D3}{}
+\hyperdef{}{refs}{}
+
 Bostock, Michael, Vadim Ogievetsky, and Jeffrey Heer. 2011. ``D3:
 Data-Driven Documents.'' \emph{IEEE Transactions on Visualization and
 Computer Graphics} 17 (12): 2301--9.
 \url{http://vis.stanford.edu/papers/d3}.
 
-\hypertarget{ref-shiny}{}
 Chang, Winston, Joe Cheng, JJ Allaire, Yihui Xie, and Jonathan
 McPherson. 2017. \emph{Shiny: Web Application Framework for R}.
 \url{https://CRAN.R-project.org/package=shiny}.
 
-\hypertarget{ref-gt_pp}{}
 Cook, Dianne, Andreas Buja, Javier Cabrera, and Catherine Hurley. 1995.
 ``Grand Tour and Projection Pursuit.'' \emph{Journal of Computational
 and Graphical Statistics} 4 (4): 155--72.
 
-\hypertarget{ref-gt_pp_mc}{}
 Cook, Dianne, Andreas Buja, Eun-Kyung Lee, and Hadley Wickham. 2007.
 ``Grand Tours, Projection Pursuit Guided Tours and Manual Controls.''
 
-\hypertarget{ref-tourrGui}{}
 Huang, Bei, Dianne Cook, and Hadley Wickham. 2012. ``TourrGui: A
-gWidgets Gui for the Tour to Explore High-Dimensional Data Using
+GWidgets GUI for the Tour to Explore High-Dimensional Data Using
 Low-Dimensional Projections.'' \emph{Journal of Statistical Software} 49
 (6): 1--12.
 
-\hypertarget{ref-ihaka:1996}{}
 Ihaka, Ross, and Robert Gentleman. 1996. ``R: A Language for Data
 Analysis and Graphics.'' \emph{Journal of Computational and Graphical
 Statistics} 5 (3): 299--314.
 
-\hypertarget{ref-RGtk2}{}
-Lawrence, Michael, and Duncan Temple Lang. 2010. ``RGtk2: A Graphical
+Lawrence, Michael, and Duncan {Temple Lang}. 2010. ``RGtk2: A Graphical
 User Interface Toolkit for R.'' \emph{Journal of Statistical Software}
 37 (8): 1--52. \url{http://www.jstatsoft.org/v37/i08/}.
 
-\hypertarget{ref-R}{}
 R Core Team. 2018. \emph{R: A Language and Environment for Statistical
 Computing}. Vienna, Austria: R Foundation for Statistical Computing.
 \url{http://www.R-project.org/}.
 
-\hypertarget{ref-tourr}{}
 Wickham, Hadley, Dianne Cook, Heike Hofmann, and Andreas Buja. 2011.
 ``Tourr: An R Package for Exploring Multivariate Data with
 Projections.'' \emph{Journal of Statistical Software} 40 (2): 1--18.
