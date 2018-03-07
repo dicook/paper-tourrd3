@@ -26,16 +26,16 @@ tourr package (Wickham et al. 2011) provides the computing and display
 in R (R Core Team 2018; Ihaka and Gentleman 1996) to make several types
 of tours: grand, guided, little and local. The projection dimension can
 be chosen between one and the number of variables in the data. The
-display, though, has no capacity for interaction. The viewer can watch
+display, however, has no capacity for interaction. The viewer can watch
 the tour like a movie, but not pause it and restart, or change tour
 type, or number of variables.
 
 These interactive controls were provided with the tourrGui package
-(Huang, Cook, and Wickham 2012), with was programmed with the RGtk2
+(Huang, Cook, and Wickham 2012), which was developed with the RGtk2
 package (Lawrence and {Temple Lang} 2010). This is not the toolkit of
-choice today, and has been superceded with primarily web-capable tools,
+choice today, and has been superseded by primarily web-capable tools,
 like Shiny (Chang et al. 2017). To display dynamic graphics though, is
-not straight-forward. This paper explains how to use D3 (Bostock,
+not straightforward. This paper explains how to use D3 (Bostock,
 Ogievetsky, and Heer 2011) as the display engine in a Shiny GUI, using
 custom message passing between server and client.
 
@@ -205,8 +205,8 @@ from the mix.
 
 The main disadvantage is that the speed is inconsistent, as server and
 client play tag to keep up with each other, and the display cannot
-handle many observations. Noticeable slow down was oberved with 2000
-points, the main reason being the rendering time required for the large
+handle many observations. Noticeable slowdown was observed with 2000
+points, mainly due to the rendering time required for the large
 number of SVG circle elements. The situation can be improved when using
 a single HTML5 canvas element to draw the scatter points, significantly
 reducing the rendering time.
