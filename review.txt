@@ -1,13 +1,3 @@
-From: John Verzani <verzani@math.csi.cuny.edu>
-Subject: R journal submission 2018-29
-Date: December 12, 2018 at 7:36:10 AM GMT+11
-To: dicook@monash.edu
-Reply-To: verzani@math.csi.cuny.edu
-
-
-Dear Dianne Cook,
-
-First, sorry this paper took so long. I had been waiting on a second reviewer.
 
 We are pleased to accept your paper "Connecting R with D3 for dynamic graphics, to explore multivariate data with tours" subject to the major revisions described below.
 
@@ -40,7 +30,3 @@ I think the code is fine. For me this paper could be improved by explicitly broa
 
 
 We would appreciate a revised version and point-by-point response to the reviewers comments within 2 months. Remember, that when responding to the reviewer's comments, your job is to persuade me, the editor, that either you've dealt with the issue, or that it's not relevant. To this end, please produce a single document that includes all the reviewers comments mingled with your responses. I particularly recommend the strategy described at http://matt.might.net/articles/peer-review-rebuttals/.
-
-Regards,
-
-John Verzani
