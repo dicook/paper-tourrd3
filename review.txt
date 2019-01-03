@@ -1,0 +1,46 @@
+From: John Verzani <verzani@math.csi.cuny.edu>
+Subject: R journal submission 2018-29
+Date: December 12, 2018 at 7:36:10 AM GMT+11
+To: dicook@monash.edu
+Reply-To: verzani@math.csi.cuny.edu
+
+
+Dear Dianne Cook,
+
+First, sorry this paper took so long. I had been waiting on a second reviewer.
+
+We are pleased to accept your paper "Connecting R with D3 for dynamic graphics, to explore multivariate data with tours" subject to the major revisions described below.
+
+Though the reviewer was critical, they thought there were enough interesting parts to form a paper around, though they expect that there will be some fleshing out, as described below:
+
+* Overall recommendation: Accept with major revisions.
+
+I'm very underwhelmed by this paper, to be honest. I think it's a bit of a tricky one to get excited about because all the Shiny experts will be reading thinking "well of course I knew you could do that" whereas all the people less familiar with Shiny won't really understand the approach. Other than that there's nothing fundamentally wrong with the approach, it's a sensible solution to a real problem and they've thoughtfully evaluated the pros and cons at the end.
+
+* Overview: Is the article important to R the community? Is the approach sensible? Are technology and methods up-to-date?
+
+Yes, it's sort of minimally important, yes. I think to make it feel more relevant it would be better to reframe as saying "hey, did you know you can run ANY JAVASCRIPT YOU LIKE in a Shiny application and you can pass WHATEVER YOU WANT INCLUDING JSON back and forth, this massively widens the scope of what you can do with Shiny, here's a really good example of what we did". It seems a bit churlish, I suppose, as well, but having said the tourrGui package is out of date it makes you think maybe they should turn theirs into a package
+
+* Article: Is anything unclear? Is anything missing? Are the examples helpful? Is there sufficient background, including alternative approaches in R?
+
+For the novices, it would be nice for them to include the method to run their code straight from the terminal:
+
+library(shiny)
+runGitHub("makipp/TourrGuiD3")
+
+I really think they need to make the paper more specialised to appeal to a Shiny audience, telling people who know Shiny stuff they don't already know, or they need to make it more general, filling in a few blanks for people who don't know Shiny. For example, they skip straight over the invalidateLater() function, they could at least tell us what it's doing.
+
+They also say "The projections are calculated using the tour object in an observe() environment, which repeatedly runs the code until a reactive variable is changed, at which point it is “invalidated” and then re-started". I think this is a bit confusing. In fact the code ONLY reruns when it is invalidated (whether by invalidateLater() or a reactive value), that's how observe() works. I'm sure that's what they mean, really, but it isn't expressed very well.
+I'm not over the moon about the dependency on ggvis, it's not that important since this is hardly production code, but this package is officially dormant and I think it's best avoided where possible, to save readers from going down a blind alley with it.
+The last thing is I would like them just to give one sentence to explain how the D3 actually ends up on the page. Really basic stuff for your Shiny savvy readers, but I don't think it is of much interest to them anyway because it's all basic stuff for the Shiny savvy.
+
+* Package: Could the functions presented be improved? Some ideas at http://bit.ly/1aYwkp3.
+
+I think the code is fine. For me this paper could be improved by explicitly broadening the scope and hand holding a bit for people who are not totally au fait with Shiny.
+
+
+We would appreciate a revised version and point-by-point response to the reviewers comments within 2 months. Remember, that when responding to the reviewer's comments, your job is to persuade me, the editor, that either you've dealt with the issue, or that it's not relevant. To this end, please produce a single document that includes all the reviewers comments mingled with your responses. I particularly recommend the strategy described at http://matt.might.net/articles/peer-review-rebuttals/.
+
+Regards,
+
+John Verzani
