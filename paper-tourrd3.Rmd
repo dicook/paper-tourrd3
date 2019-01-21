@@ -91,13 +91,21 @@ The new implementation of the tour interface uses D3 to render each projection s
 
 There are two functions provided by the Shiny framework to transport data between R and JavaScript: `session$sendCustomMessage()` in R, and the corresponding `Shiny.addCustomMessageHandler()` in JavaScript. Whenever the former is executed in R, the latter function will execute a code block in JS. There are many examples of such functions being used to pass arbitrary data from an R app to a JS front-end, few examples exist of this basic functionality to update a D3 animation in real-time.
 
-The data format expected by D3 is in JSON format, which combines two basic programming paradigms: a collection of name/value pairs, and an ordered list of values. R's preferred data formats include data frames, vectors and matrices. Every time a new projection has been calculated with the tour path, the resulting matrix needs to be converted to JSON and sent to D3. The code to send the D3 data looks like this:
+To set up the interface for the app, we need to load the relevant scripts into the Shiny app and assign a section for the resulting plots. This is done when setting up the user interface. We import D3 and our plotting code via the `tags$script` (for web links) and `includeScript` (for reading from a full path). We use `tags$div` to assign an id for the output section that can be accessed in the D3 code.
 
 ```
-session$sendCustomMessage(type = "data", message = toJSON(j))
+tags$script(src = "https://d3js.org/d3.v4.min.js"),
+includeScript(system.file("js/d3anim.js", package = "tourrGUID3")),
+tags$div(id = "d3_output")
 ```
 
-This code is from the observe environment from the `server.R` file. It converts the matrix of projected data points to JSON format, and sends it to JavaScript with the id data. When parsed in D3 by its `data()` method, it is converted back into a logical 2D array where the columns are queried first, then the rows. If column names are included in the JSON, the column indices are strings; otherwise they are integers starting from 1.
+The data format expected by D3 is in JSON format, which combines two basic programming paradigms: a collection of name/value pairs, and an ordered list of values. R's preferred data formats include data frames, vectors and matrices. Every time a new projection has been calculated with the tour path, the resulting matrix needs to be converted to JSON and sent to D3. Using a named list we can send multiple JSON datasets to D3, e.g. to draw both the data points (stored in dataframe d) and the projection axes (stored in dataframe a). Converting dataframes will pass the column names to JSON. The code to send the D3 data looks like this:
+
+```
+session$sendCustomMessage(type = "data", message = list(d = toJSON(d), a = toJSON(a)))
+```
+
+This code is from the observe environment from the `server.R` file. It converts the matrix of projected data points to JSON format, and sends it to JavaScript with the id data. The list entries of the "message" can parsed in D3 by its `data()` method, e.g. `data(message.d)` to access the projected data points, and we can access each column through the column names assigned in the original dataframe, and loop over all rows for rendering.
 All of the code required to render the scatterplots and legends, along with colours, is JavaScript code in the file `d3anim.js`. In particular, the data from R is handled with the following code:
 
 ```
@@ -128,8 +136,7 @@ observeEvent(input$restart_random,
 })
 ```
 
-The projections are calculated using the tour object in an `observe()` environment, which repeatedly runs the code until a reactive variable is changed, at which point it is "invalidated" and then re-started. The projections are calculated using the following code
-block:
+The projections are calculated using the tour object in an `observe()` environment, which re-executes the code whenever it is invalidated. The invalidation is either by a change in reactive value inside the code block, or we can schedule a re-execution by explicitly invalidating the observer after a selected interval. The projections are calculated using the following code block:
 
 ```
 observe({
@@ -155,6 +162,10 @@ observe({
   }
 })
 ```
+
+## Troubleshooting
+
+Fixing bugs in the JavaScript code can be cumbersome, as R and Shiny will not report any errors. Tracing JavaScript errors can be done when using the JavaScript console in the web browser. For example, in Google Chrome the console can be accessed via the "Developer Tools" option found under "Moore Tools" in the control menu. Typical errors that we encountered were version dependent syntax in D3, e.g. for axis definitions or scaling.
 
 ## Pros and cons
 
