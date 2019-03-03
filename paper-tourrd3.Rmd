@@ -6,21 +6,21 @@ author:
     address:
     - Department of Econometrics and Business Statistics
     email:  mkipp271@gmail.com
-  - name: Dianne Cook
-    affiliation: Monash University
-    address:
-    - Department of Econometrics and Business Statistics
-    email:  dicook@monash.edu 
   - name: Ursula Laa
     affiliation: Monash University
     address:
     - School of Physics and Astronomy
     email:  ursula.laa@monash.edu
+  - name: Dianne Cook
+    affiliation: Monash University
+    address:
+    - Department of Econometrics and Business Statistics
+    email:  dicook@monash.edu 
 bibliography: references.bib
 link-citations: true
 fig_caption: yes
 abstract: >
-  The tourr package in R has several algorithms and displays for showing multivariate data as a sequence of low-dimensional projections. It can display as a movie but has no capacity for interaction, such as stop/go, change tour type, drop/add variables. The tourrGui  package provides these sorts of controls, but the interface is programmed with the dated RGtk2 package. This work explores using custom messages to pass data from R to D3  for viewing, using the Shiny framework.  
+  The tourr package in R has several algorithms and displays for showing multivariate data as a sequence of low-dimensional projections. It can display as a movie but has no capacity for interaction, such as stop/go, change tour type, drop/add variables. The tourrGui  package provides these sorts of controls, but the interface is programmed with the dated RGtk2 package. This work explores using custom messages to pass data from R to D3  for viewing, using the Shiny framework. This is an approach that can be generally used for creating all sorts of interactive graphics.  
 preamble: >
   % Any extra latex you need in the preamble
 output: rticles::rjournal_article
@@ -31,7 +31,15 @@ output: rticles::rjournal_article
 library(bookdown)
 library(knitcitations)
 library(RefManageR)
-knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, kfigr.link=TRUE, kfigr.prefix=TRUE, cache=TRUE, fig.env = TRUE, fig.cap=TRUE, fig.height=3)
+knitr::opts_chunk$set(echo=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      kfigr.link=TRUE, 
+                      kfigr.prefix=TRUE, 
+                      cache=TRUE, 
+                      fig.env = TRUE, 
+                      fig.cap=TRUE, 
+                      fig.height=3)
 
  
 options("citation_format" = "pandoc")
@@ -46,6 +54,8 @@ library(tourr)
 
 ## Introduction
 
+Dd you know you can run *any javascript you like* in a Shiny application and you can pass *whatever you want including JSON* back and forth? This massively widens the scope of what you can do with Shiny, and generating a tour of multivariate data with this approach is a really good example of what is possible.
+
 The tour algorithm [@gt_pp; @gt_pp_mc] is a way of systematically generating and displaying projections of high-dimensional spaces in order for the viewer to examine the multivariate distribution of data. It can do this either randomly, or by picking projections judged interesting according to some criterion or index function. The tourr package [@tourr] provides the computing and display in R [@R; @ihaka:1996] to make several types of tours: grand, guided, little and local. The projection dimension can be chosen between one and the number of variables in the data. The display, though, has no capacity for interaction. The viewer can watch the tour like a movie, but not pause it and restart, or change tour type, or number of variables. 
 
 These interactive controls were provided with the tourrGui package [@tourrGui], with was programmed with the RGtk2 package [@RGtk2]. This is not the toolkit of choice today, and has been superceded with primarily web-capable tools, like Shiny [@shiny]. To display dynamic graphics though, is not straight-forward. This paper explains how to use D3 [@D3] as the display engine in a Shiny graphical user interface (GUI), using custom message passing between server and client.
@@ -53,17 +63,15 @@ These interactive controls were provided with the tourrGui package [@tourrGui], 
 
 ## Creating a tour, with the tourr package
 
-The \pkg{tourr} package [@tourr] is an R implementation of the tour algorithms discussed in @gt_pp_mc. It includes methods for geodesic interpolation and basis generation, as well as an implementation of the simulated annealing algorithm to optimise projection pursuit indices for the guided tour. The tour can be displayed directly in the R graphics device, for example:
+The \pkg{tourr} package [@tourr] is an R implementation of the tour algorithms discussed in @gt_pp_mc. It includes methods for geodesic interpolation and basis generation, as well as an implementation of the simulated annealing algorithm to optimise projection pursuit indices for the guided tour. The tour can be displayed directly in the R graphics device, for example, the code below generates a 1D density tour. Figure \ref{tour} shows snapshots.
 
-```{r eval=FALSE, echo=TRUE}
+```{r eval=FALSE, echo=TRUE, tidy=TRUE}
 library(tourr)
-# quartz() # to display on a Mac
-# X11() # For windows
+# quartz() # to display on a Mac;
+# X11() # For windows;
 # The Rstudio graphics device is not advised
 animate_dist(flea[, 1:6], center = TRUE)
 ```
-
-generating the animation, with some stills shown in Figure \ref{tour}.
 
 \begin{figure}[ht]
 \centerline{\includegraphics[width=5cm]{figures/tour1.png}\includegraphics[width=5cm]{figures/tour2.png}\includegraphics[width=5cm]{figures/tour3.png}}
@@ -161,6 +169,16 @@ observe({
     }
   }
 })
+```
+
+## Try it
+
+You can try the app yourself using this code:
+
+```{r eval=FALSE, echo=TRUE, tidy=TRUE}
+devtools::install_github("uschiLaa/tourrGUID3")
+library(tourrGUID3)
+launchApp(system.file("extdata", "geozoo.csv", package = "tourrGUID3"))
 ```
 
 ## Troubleshooting
