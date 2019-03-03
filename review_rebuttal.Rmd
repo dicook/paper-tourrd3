@@ -52,7 +52,7 @@ launchApp(system.file("extdata", "geozoo.csv", package = "tourrGUID3"))
 
 *The last thing is I would like them just to give one sentence to explain how the D3 actually ends up on the page. Really basic stuff for your Shiny savvy readers, but I don't think it is of much interest to them anyway because it's all basic stuff for the Shiny savvy.*
 
-**check this**
+**Explicit code and a short explanation about rendering D3 output in the Shiny app has been added.**
 
 *> Package: Could the functions presented be improved? Some ideas at http://bit.ly/1aYwkp3.*
 

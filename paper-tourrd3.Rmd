@@ -54,7 +54,7 @@ library(tourr)
 
 ## Introduction
 
-Dd you know you can run *any javascript you like* in a Shiny application and you can pass *whatever you want including JSON* back and forth? This massively widens the scope of what you can do with Shiny, and generating a tour of multivariate data with this approach is a really good example of what is possible.
+Did you know you can run *any javascript you like* in a Shiny application and you can pass *whatever you want including JSON* back and forth? This massively widens the scope of what you can do with Shiny, and generating a tour of multivariate data with this approach is a really good example of what is possible.
 
 The tour algorithm [@gt_pp; @gt_pp_mc] is a way of systematically generating and displaying projections of high-dimensional spaces in order for the viewer to examine the multivariate distribution of data. It can do this either randomly, or by picking projections judged interesting according to some criterion or index function. The tourr package [@tourr] provides the computing and display in R [@R; @ihaka:1996] to make several types of tours: grand, guided, little and local. The projection dimension can be chosen between one and the number of variables in the data. The display, though, has no capacity for interaction. The viewer can watch the tour like a movie, but not pause it and restart, or change tour type, or number of variables. 
 
@@ -107,6 +107,15 @@ includeScript(system.file("js/d3anim.js", package = "tourrGUID3")),
 tags$div(id = "d3_output")
 ```
 
+On the D3 side we can access the id defined in Shiny, and for example assign it to a scalable vector graphics (svg) object to be filled in D3 and rendered onto the Shiny app.
+
+```
+var svg = d3.select("#d3_output")
+    .append("svg")
+    .attr("width", w)
+    .attr("height", h);
+```
+
 The data format expected by D3 is in JSON format, which combines two basic programming paradigms: a collection of name/value pairs, and an ordered list of values. R's preferred data formats include data frames, vectors and matrices. Every time a new projection has been calculated with the tour path, the resulting matrix needs to be converted to JSON and sent to D3. Using a named list we can send multiple JSON datasets to D3, e.g. to draw both the data points (stored in dataframe d) and the projection axes (stored in dataframe a). Converting dataframes will pass the column names to JSON. The code to send the D3 data looks like this:
 
 ```
@@ -139,35 +148,29 @@ observeEvent(input$restart_random,
       new_tour(as.matrix(rv$d[input$variables]),
               choose_tour(input$type, 
               input$guidedIndex,
-              c(rv$class[[1]]), 
-              input$scagType), b)
+              c(rv$class[[1]])), b)
 })
 ```
 
-The projections are calculated using the tour object in an `observe()` environment, which re-executes the code whenever it is invalidated. The invalidation is either by a change in reactive value inside the code block, or we can schedule a re-execution by explicitly invalidating the observer after a selected interval. The projections are calculated using the following code block:
+The projections are calculated using the tour object in an `observe()` environment, which re-executes the code whenever it is invalidated. The invalidation is either by a change in reactive value inside the code block, or we can schedule a re-execution by explicitly invalidating the observer after a selected interval using `invalidateLater()`. The projections are calculated using the following code block:
 
 ```
 observe({
-  tour <- rv$tour
-  aps <- rv$aps
-  step <- tour(aps / fps)
-  if (!is.null(step)) {
-    invalidateLater(1000 / fps)
-    j <- center(rv$mat %*% step$proj)
-    j <- cbind(j, class = rv$class)
-    colnames(j) <- NULL
-    session$sendCustomMessage(type = "data", 
-      message = toJSON(j))
-  }
-  else {
-    if (length(rv$mat[1, ]) < 3) {
-    session$sendCustomMessage(type = "debug", 
-      message = "Error: Need > 2 variables.")
-    } else {
-    session$sendCustomMessage(type = "debug", 
-    message = "Guided tour finished: no better bases found.")
-    }
-  }
+      if (length(rv$mat[1, ]) < 3) {
+        session$sendCustomMessage(type = "debug",
+        message = "Error: Need >2 variables.")
+      }
+      aps <- rv$aps
+      tour <- rv$tour
+      step <- rv$tour(aps / fps)
+      invalidateLater(1000 / fps)
+      j <- center(rv$mat %*% step$proj)
+      j <- cbind(j, class = rv$class)
+      colnames(j) <- NULL
+      session$sendCustomMessage(type = "data",
+                                message =
+                                list(d = toJSON(data.frame(pL=rv$pLabel[,1],x=j[,2],y=j[,1],c=j[,3])),
+                                a = toJSON(data.frame(n=rv$vars,y=step$proj[,1],x=step$proj[,2]))))
 })
 ```
 
