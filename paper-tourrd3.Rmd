@@ -202,7 +202,7 @@ The custom message tools from Shiny provide a way to share a tour path with the 
 
 ## Code
 
-The code is available at [https://github.com/makipp/TourrGuiD3](https://github.com/makipp/TourrGuiD3), and the source material for this paper is available at [https://github.com/dicook/paper-tourrd3](https://github.com/dicook/paper-tourrd3).
+The code is available at [https://github.com/uschiLaa/tourrGUID3](https://github.com/uschiLaa/tourrGUID3), and the source material for this paper is available at [https://github.com/dicook/paper-tourrd3](https://github.com/dicook/paper-tourrd3).
 
 ## Acknowledgements
 
