@@ -58,6 +58,8 @@ launchApp(system.file("extdata", "geozoo.csv", package = "tourrGUID3"))
 
 *I think the code is fine. For me this paper could be improved by explicitly broadening the scope and hand holding a bit for people who are not totally au fait with Shiny.*
 
-**check this**
+**The explanations have been revised with a beginning user in mind.**
 
 *We would appreciate a revised version and point-by-point response to the reviewers comments within 2 months. Remember, that when responding to the reviewer's comments, your job is to persuade me, the editor, that either you've dealt with the issue, or that it's not relevant. To this end, please produce a single document that includes all the reviewers comments mingled with your responses. I particularly recommend the strategy described at http://matt.might.net/articles/peer-review-rebuttals/.*
+
+**Done**
